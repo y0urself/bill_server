@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block header %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-8">
+            <h1 align="center">
+                Mobee's Zentrale
+            </h1>
+        </div>
+        <div id="backbtn" class="col-sm-2">&nbsp;
+            <a role="button" class="btn btn-dark  float-right btn-secondary" href="{% url 'bills' %}">
+                Parts 
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block main %}
+<div id="content" class="container-fluid">
+    <div class="jumbotron">
+        <p>Dies ist eine Liste der auf dem Server hinterlegten Rechnungen:</p>
+        <ul class="list-group">
+            {% for bill in bills_list %}
+            <li class="list-group-item">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                Rechnung Nr.: {{bill.id_field}}
+                            </div>
+                            <div class="col-sm-4">
+                                Kunde: {{bill.company}} {{bill.surname}}
+                            </div>
+                            <div class="col-sm-2">
+                                <a role="button" class="btn float-right btn-info" href="{% url 'bill' bill.id %}">
+                                    Ansehen 
+                                </a>
+                            </div>
+                            <div class="col-sm-2">
+                                <a role="button" class="btn float-right btn-warning" href="{% url 'edit_bill' bill.id %}">
+                                    Bearbeiten 
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+            {% endfor %}
+        </ul>	
+        <a role="button" class="btn float-right btn-success" href="/bills/new_bill/">Neues Dokument</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block header %}
+<div class="container-fluid">
+    <div class="row">
+        <div id="backbtn" class="col-sm-2">&nbsp;
+            <a role="button" class="btn btn-dark" href="{% url 'bills' %}">
+                Zurück 
+            </a>
+        </div>
+        <div class="col-sm-8">
+            <h1 align="center">
+                Rechnung Nr. {{bill.id_field}}
+            </h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block main %}
+<div id="content" class="container-fluid">
+    <div class="jumbotron">
+        <hr class="my-4"> 
+        <h3>
+            Kundeninformationen
+        </h3>
+        <table class="table table-hover">
+            <tr>
+                <td class="">Firma:</td>
+                <td>{{customer.company}}</td>
+            </tr>
+            <tr>
+                <td class="">Name:</td>
+                <td class="">{{customer.surname}} {{customer.name}}</td>
+            </tr>
+            <tr>
+                <td class="">Addresse</td>
+                <td>{{customer.street}}, {{customer.city}}</td>
+            </tr>
+        </table>
+        <h3>
+            Rechnungsinformationen
+        </h3>
+        <table class="table table-hover">
+            <tr>
+                <td class="">Steuersatz:</td>
+                <td>{{bill.taxes}}</td>
+            </tr>
+            <tr>
+                <td class="">Rechnungsnummer:</td>
+                <td>{{bill.id_field}}</td>
+            </tr>
+        </table>
+        <h3>
+            Rechnungsposten
+        </h3>
+        <table class="table table-hover">
+            <tr>
+                <td class="">Hersteller</td>
+                <td>Produktname</td>
+                <td>Produktbeschreibung</td>
+                <td>Produkt-Typ</td>
+                <td>Datum</td>
+                <td>Netto-Preis in €</td>
+            </tr>
+            {% for part in parts %}
+            <tr>
+                <td class="">{{ part.vendor }}</td>
+                <td>{{ part.product_name }}</td>
+                <td>{{ part.desc }}</td>
+                <td>{{ part.product_type }}</td>
+                <td>{{ part.date }}</td>
+                <td>{{ part.nprice }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div class="row">
+            <div class="col-sm-6">
+                <a role="button" class="btn float-right btn-warning btn-block" href="{% url 'edit_bill' bill.id%}">
+                    Bearbeiten
+                </a>
+            </div>
+            <div class="col-sm-6">
+                <a role="button" id="form_delete" class="btn float-right btn-danger btn-block" href="{% url 'del_bill' bill.id %}">
+                    Löschen 
+                </a>
+            </div>
+        </div>
+        <div class="clearfix">
+        </div>
+    </div>
+</div>
+{% endblock %}

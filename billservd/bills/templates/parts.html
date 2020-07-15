@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block main %}
+<div id="content" class="container-fluid">
+    <div class="jumbotron">
+        <p>Dies ist eine Liste der auf dem Server hinterlegten Teile</p>
+        <hr class="my-4">
+        <ul class="list-group">
+        {% for part in parts_list %}
+            <li class="list-group-item"><a href="/parts/{{ part.id }}/">{{part.vendor}} {{part.product_name}} {{part.desc}}</a></li>
+        {% endfor %}
+        </ul>	
+        <a role="button" class="btn float-right btn-secondary" href="parts/new_part">Neue Komponente</a>
+    </div>
+</div>
+{% endblock %}

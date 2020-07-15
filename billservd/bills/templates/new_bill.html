@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<script type="text/javascript">
+            //var bill = {{ bill|safe }}
+            //var customer = {{ c|safe }}
+            //var parts = {{ p|safe }}
+            var pk = {{ pk|safe }}
+            var submit_url = "{% url 'save_bill' %}"
+            var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+            
+            console.log(submit_url)
+            console.log(csrftoken)
+            </script>
+        {% load static %}
+        <script type="text/javascript" src="{% static '/js/new_bill.js' %}"></script>
+        <style type="text/css">
+            .puzzletable input {margin: 0; width: 100%;}
+            .puzzletable td {margin: 0; padding: 0;}
+        </style>
+{% endblock %}
+
+{% block header %}
+            <div class="container-fluid">
+                <div class="row">
+                    <div id="backbtn" class="col-sm-2">&nbsp;
+                        <a role="button" class="btn btn-dark" href="/bills">
+                            Zurück 
+                        </a>
+                    </div>
+                    <div class="col-sm-8">
+                        <h1 align="center">
+                            Neue Rechnung erstellen
+                        </h1>
+                    </div>
+                </div>
+            </div>
+{% endblock %}
+
+{% block main %}
+<div id="content" class="container-fluid">
+    <div class="jumbotron">
+        <hr class="my-4"> 
+        <form class="form" method="POST" action="{% url 'save_bill'%}">
+            {% csrf_token %}
+            <h3>
+                Kundeninformationen
+            </h3>
+            {% for field in cform %}
+                {% if not field.is_hidden %}
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ field.label_tag }}
+                    </div>
+                    <div class="col-sm-8">
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small>{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                    {{field}}
+                {% endif %}
+            {% endfor %}
+            <h3>
+                Rechnungsinformationen
+            </h3>
+            {% for field in bform %}
+                {% if not field.is_hidden %}
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ field.label_tag }}
+                    </div>
+                    <div class="col-sm-8">
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small>{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                    {{field}}
+                    {% endif %}
+                    {% endfor %}
+                    <h3>
+                        Rechnungsposten
+                    </h3>
+                    <table class="table table-xtra-condensed parts_table table-striped" id="parts_table">
+                        <tbody>
+                            {% for part in pform %}
+                            <tr class="form_row d-flex parts_row" style="margin-left: 0px;">
+                                {% for field in part %}
+                                    {% if not field.is_hidden %}
+                                        {% if field.name != "date" and field.name != "nprice" %}
+                                            <td class="col-sm-2">
+                                                {{ field }}
+                                            </td>
+                                        {% else %}
+                                            <td class="col-sm-1">
+                                                {{ field }}
+                                            </td>
+                                        {% endif %}
+                                    {% else %}
+                                        {{field}}
+                                    {% endif %}
+                                {% endfor %}
+                                <td class="col-sm-2">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-dark form_duplicate" type="button">
+                                            <span class="oi" data-glyph="plus" title="plus" aria-hidden="true"></span>
+                                        </button>
+                                        <button class="btn btn-dark form_delete" type="button">
+                                            <span class="oi" data-glyph="delete" title="delete" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            <!---
+                <div class="form-group">
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="single" role="tabpanel" aria-labelledby="single-tab">
+                                        <input class="row_id" type="hidden" value="1">
+                                        <td class="col-sm-3">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <button class="btn btn-dark btn_move" type="button">
+                                                        <span class="oi" data-glyph="move" title="move" aria-hidden="true"></span>
+                                                    </button>
+                                                </div>
+                                                <input type="text" class="form-control form_partname" placeholder="Komponenten-Name">
+                                            </div>
+                                        </td>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <small id="single" class="form-text text-muted">
+                                        Listenelemente können per Drag and Drop verschoben werden.<br/>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                -->
+                    <button type=submit class="btn btn-secondary" id="form_add" >
+                        Submit
+                    </button>
+            </form>
+        </div>
+    </div>
+    {% endblock %}
+    
