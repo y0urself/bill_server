@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.core import serializers
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.forms.models import modelformset_factory
+from django.forms.formsets import formset_factory
 
 import json
 
@@ -21,7 +22,7 @@ def bills(request):
     return HttpResponse(template.render(request=request, context=context))
 
 
-def bill(request, bill_id):
+def show_bill(request, bill_id):
     bill = Bill.objects.get(id=bill_id)
     print(bill)
     c = bill.customer
@@ -32,7 +33,7 @@ def bill(request, bill_id):
         'bill': bill,
         'customer' : c,
         'parts' : p,
-        'title': f'Rechnung Nr. {bill.id_field}'
+        'title': f'Rechnung Nr. {bill.number}'
     }
     return HttpResponse(template.render(request=request, context=context))
 
@@ -58,11 +59,12 @@ def part(request, part_id):
 
 
 def new_bill(request):
-    PartFormset = modelformset_factory(Part, PartForm)
+    PartFormset = modelformset_factory(Part, PartForm, extra=1)
     template = loader.get_template('new_bill.html')
-    bform = BillForm(prefix="b_")
-    cform = CustomerForm(prefix="c_")
-    pform = PartFormset(prefix="p_")
+    bform = BillForm(prefix="b")
+    cform = CustomerForm(prefix="c")
+    pform = PartFormset(prefix="p", queryset=Part.objects.none())
+    print(pform.as_p())
     context = {
         'bill': 'null',
         'title': f'Neue Rechnung erstellen',
@@ -75,36 +77,56 @@ def new_bill(request):
 
 @csrf_exempt
 def save_bill(request):
-    PartFormset = modelformset_factory(Part, PartForm)
+    print("START SUBMITTING ...")
+    PartFormset = modelformset_factory(Part, PartForm, extra=0)
     template = loader.get_template('bill.html')
+    print(request.POST.get('b-number'))
+    #b_inst = Bill.objects.get(number=request.POST.get('b-number'))
+    #print(b_inst)
     if request.method == "POST":
-        b = BillForm(request.POST, prefix="b_")
-        c = CustomerForm(request.POST, prefix="c_")
-        p = PartFormset(request.POST, prefix="p_")
-        if b.is_valid() and c.is_valid() and p.is_valid():
+        print("WE HAVE A POST")
+        b = BillForm(request.POST, prefix="b")#, instance=b_inst)
+        print(b)
+        c = CustomerForm(request.POST, prefix="c")
+        p = PartFormset(request.POST, prefix="p")
+        if b.is_valid():
             print("VALID!")
-            b.save()
-            c.save()
-            p.save()
-
+            if c.is_valid():
+                print("VALID!")
+                if p.is_valid():
+                    print("VALID!")
+                    customer = c.save(commit=False)
+                    customer.save()
+                    parts = p.save(commit=False)
+                    bill = b.save(commit=False)
+                    bill.save()
+                    for part in parts:
+                        part.save()
+                        bill.parts.add(part)
+                    bill.customer_id = customer.id
+                    bill.save()
+                    print(bill.id)
+                    print(bill.parts)
+        return show_bill(request, bill.id)
+                    #bill = b.save()
     pass
 
 
 def edit_bill(request, bill_id):
+    PartFormset = modelformset_factory(Part, PartForm, extra=1)
     #s erialize the Model to string and from string to json .... 
     # this is not so nice .... :(
     b = Bill.objects.get(id=bill_id)
     c = b.customer
-    print(c)
-    q = b.parts.all()
-    p = []
-    for pb in q:
-        p.append(pb)
-    print(p)
-    PartFormset = modelformset_factory(Part, PartForm, extra=0)
-    bform = BillForm(prefix="b", instance=b)
-    cform = CustomerForm(prefix="c", instance=c)
-    pform = PartFormset(prefix="p", queryset=q)
+    if b.parts:
+        q = b.parts.all()
+        pform = PartFormset(prefix="p", queryset=q)
+    else:
+        pform = PartFormset(prefix="p", queryset=Part.objects.none())
+        print(pform.as_p())
+
+    bform = BillForm(prefix="b", instance=b, auto_id=b.id)
+    cform = CustomerForm(prefix="c", instance=c, auto_id=c.id)
     if b:
         template = loader.get_template('new_bill.html')
         context = {

@@ -36,6 +36,7 @@ function checkAppend() {
         i++
     });
     if (!empty) {
+        $('#id_p-TOTAL_FORMS').val(i)
         var html = $(".form_row:first").get(0).outerHTML.replaceAll('p-0-', 'p-' + i + '-').replace(/value="(.*)" c/g, 'value="" c')
         console.log(html)
         $(".form_row:last").after(html);

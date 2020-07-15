@@ -27,10 +27,10 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-sm-4">
-                                Rechnung Nr.: {{bill.id_field}}
+                                Rechnung Nr.: {{bill.number}}
                             </div>
                             <div class="col-sm-4">
-                                Kunde: {{bill.company}} {{bill.surname}}
+                                Kunde: {{bill.customer.company}} {{bill.customer.surname}}
                             </div>
                             <div class="col-sm-2">
                                 <a role="button" class="btn float-right btn-info" href="{% url 'bill' bill.id %}">

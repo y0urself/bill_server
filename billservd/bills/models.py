@@ -38,12 +38,11 @@ class Customer(Model):
         return f'Kunde: {cx}'
 
 class Bill(Model):
-    id_field = CharField(max_length=6)
     date = DateField()
     taxes = FloatField(default=0.19)
-    number = CharField(max_length=6)
+    number = CharField(max_length=6, unique=True)
     parts = ManyToManyField(Part)
-    customer = ForeignKey(Customer, on_delete=CASCADE)
+    customer = ForeignKey(Customer, on_delete=CASCADE, null=True)
 
     def bill_date(self):
         return f'Rechnungsdatum: {self.date}'
@@ -60,6 +59,7 @@ class PartForm(forms.ModelForm):
             'desc', 
             'date', 
             'nprice', 
+            'id'
         ]
         labels = {
             'vendor': 'Hersteller',
@@ -81,7 +81,7 @@ class PartForm(forms.ModelForm):
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ['name', 'surname', 'company', 'street', 'city', 'gender']
+        fields = ['name', 'surname', 'company', 'street', 'city', 'gender', 'id']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'surname': forms.TextInput(attrs={'class': 'form-control'}),
@@ -102,7 +102,7 @@ class CustomerForm(forms.ModelForm):
 class BillForm(forms.ModelForm):
     class Meta:
         model = Bill
-        fields = ['date', 'taxes', 'number']
+        fields = ['date', 'taxes', 'number', 'id']
         widgets = {
             'date': forms.TextInput(attrs={'class': 'form-control'}),
             'taxes': forms.TextInput(attrs={'class': 'form-control'}),

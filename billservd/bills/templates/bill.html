@@ -13,7 +13,7 @@
         </div>
         <div class="col-sm-8">
             <h1 align="center">
-                Rechnung Nr. {{bill.id_field}}
+                Rechnung Nr. {{bill.number}}
             </h1>
         </div>
     </div>
@@ -30,15 +30,15 @@
         <table class="table table-hover">
             <tr>
                 <td class="">Firma:</td>
-                <td>{{customer.company}}</td>
+                <td>{{bill.customer.company}}</td>
             </tr>
             <tr>
                 <td class="">Name:</td>
-                <td class="">{{customer.surname}} {{customer.name}}</td>
+                <td class="">{{bill.customer.surname}} {{bill.customer.name}}</td>
             </tr>
             <tr>
                 <td class="">Addresse</td>
-                <td>{{customer.street}}, {{customer.city}}</td>
+                <td>{{bill.customer.street}}, {{bill.customer.city}}</td>
             </tr>
         </table>
         <h3>
@@ -51,7 +51,7 @@
             </tr>
             <tr>
                 <td class="">Rechnungsnummer:</td>
-                <td>{{bill.id_field}}</td>
+                <td>{{bill.number}}</td>
             </tr>
         </table>
         <h3>
