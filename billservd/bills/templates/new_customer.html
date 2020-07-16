@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+        <!-- {% load static %} -->
+        <!-- <script type="text/javascript" src="{% static '/js/new_customer.js' %}"></script> -->
+{% endblock %}
+
+{% block header %}
+<div class="container-fluid">
+    <div class="row">
+        <div id="backbtn" class="col-sm-2">&nbsp;
+            <a role="button" class="btn btn-dark" href="/customers">
+                Zurück 
+            </a>
+        </div>
+        <div class="col-sm-8">
+            <h1 align="center">
+                {{ title }}
+            </h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block main %}
+<div id="content" class="container-fluid">
+    <div class="jumbotron">
+        <hr class="my-3"> 
+        <form class="form" method="POST" action="">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-3">
+                    <h3>
+                        Kundeninformationen 
+                    </h3>
+                </div>
+                <div class="col-sm-5">
+                    {{ some_form.customers }}
+                </div>
+                <div class="col-sm-2">
+                    <button type=submit class="btn btn-primary" id="form_choose" >
+                        Auswählen
+                    </button>
+                </div>
+            </div>
+
+        </form>
+        <form class="form" method="POST" action="">
+            {% csrf_token %}
+            {% for field in cform %}
+                {% if not field.is_hidden %}
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ field.label_tag }}
+                    </div>
+                    <div class="col-sm-8">
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small>{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                    {{field}}
+                {% endif %}
+            {% endfor %}
+            {{ cform.errors }}
+            {{ cform.non_field_errors }}
+            <button type=submit class="btn btn-primary" id="form_add" >
+                Speichern
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+    

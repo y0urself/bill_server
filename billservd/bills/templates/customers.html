@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block header %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-8">
+            <h1 align="center">
+                Mobee's Zentrale: Kunden
+            </h1>
+        </div>
+        <div id="backbtn" class="col-sm-2">&nbsp;
+            <a role="button" class="btn btn-dark  div_buttons btn-secondary" href="{% url 'bills' %}">
+                Rechnungen 
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block main %}
+<div id="content" class="container-fluid">
+    <div class="jumbotron">
+        <p>Dies ist eine Liste der auf dem Server hinterlegten Kunden:</p>
+        <ul class="list-group">
+            {% for customer in customers %}
+            <li class="list-group-item">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                Kunde: {{ customer }}
+                            </div>
+                            <div class="col-sm-4">
+                                <a role="button" class="btn div_buttons btn-info" href="{% url 'customer' customer.id %}">
+                                    Ansehen 
+                                </a>
+                                <a role="button" class="btn div_buttons btn-warning" href="{% url 'edit_customer' customer.id %}">
+                                    Bearbeiten 
+                                </a>
+                                <a role="button" class="btn btn-danger div_buttons" href="{% url 'del_customer' customer.id %}">
+                                    Löschen 
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+            {% endfor %}
+        </ul>	
+        <a role="button" class="btn float-right btn-success" href="/customers/new_customer/">Neues Dokument</a>
+    </div>
+</div>
+{% endblock %}

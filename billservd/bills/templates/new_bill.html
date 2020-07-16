@@ -1,17 +1,6 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-<script type="text/javascript">
-            //var bill = {{ bill|safe }}
-            //var customer = {{ c|safe }}
-            //var parts = {{ p|safe }}
-            var pk = {{ pk|safe }}
-            var submit_url = "{% url 'save_bill' %}"
-            var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-            
-            console.log(submit_url)
-            console.log(csrftoken)
-            </script>
         {% load static %}
         <script type="text/javascript" src="{% static '/js/new_bill.js' %}"></script>
         <style type="text/css">
@@ -40,12 +29,28 @@
 {% block main %}
 <div id="content" class="container-fluid">
     <div class="jumbotron">
-        <hr class="my-4"> 
-        <form class="form" method="POST" action="{% url 'save_bill'%}">
+        <hr class="my-3"> 
+        <form class="form" method="POST" action="">
             {% csrf_token %}
-            <h3>
-                Kundeninformationen
-            </h3>
+            <div class="row">
+                <div class="col-sm-3">
+                    <h3>
+                        Kundeninformationen 
+                    </h3>
+                </div>
+                <div class="col-sm-5">
+                    {{ some_form.customers }}
+                </div>
+                <div class="col-sm-2">
+                    <button type=submit class="btn btn-primary" id="form_choose" >
+                        Auswählen
+                    </button>
+                </div>
+            </div>
+
+        </form>
+        <form class="form" method="POST" action="">
+            {% csrf_token %}
             {% for field in cform %}
                 {% if not field.is_hidden %}
                 <div class="row">
@@ -124,8 +129,8 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <button type=submit class="btn btn-secondary" id="form_add" >
-                Submit
+            <button type=submit class="btn btn-primary" id="form_add" >
+                Speichern
             </button>
         </form>
     </div>

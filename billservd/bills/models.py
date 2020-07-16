@@ -7,11 +7,11 @@ from django.utils import timezone
 
 
 class Part(Model):
-    vendor = CharField(max_length=50, blank=True)
-    product_name = CharField(max_length=50, blank=True)
+    vendor = CharField(max_length=100, blank=True)
+    product_name = CharField(max_length=100, blank=True)
     product_type = CharField(max_length=100, blank=True)
-    desc = CharField(max_length=50, default='')
-    date = DateField()
+    desc = CharField(max_length=100, blank=True)
+    date = DateField(blank=True, null=True)
     nprice = FloatField()
 
     def __str__(self):
@@ -24,6 +24,8 @@ GENDERS = [
 ]
 
 class Customer(Model):
+    class Meta:
+        unique_together = [['name', 'surname', 'street', 'city'], ['company', 'street', 'city']]
     name = CharField(max_length=50, blank=True)
     surname = CharField(max_length=50, blank=True)
     company = CharField(max_length=70, blank=True)
@@ -32,10 +34,10 @@ class Customer(Model):
     gender = CharField(max_length=10, choices=GENDERS, default='keins')
 
     def __str__(self):
-        cx = self.name
+        cx = f'{self.name} {self.surname}, {self.street} {self.city}'
         if self.company:
-            cx = self.company
-        return f'Kunde: {cx}'
+            cx = f'{self.company}, {self.street} {self.city}'
+        return f'{cx}'
 
 class Bill(Model):
     date = DateField()
@@ -46,7 +48,6 @@ class Bill(Model):
 
     def bill_date(self):
         return f'Rechnungsdatum: {self.date}'
-
 
 
 class PartForm(forms.ModelForm):
@@ -74,7 +75,7 @@ class PartForm(forms.ModelForm):
             'product_name': forms.TextInput(attrs={'class': 'form-control part_input', 'placeholder': 'Produktbezeichnung'}),
             'product_type': forms.TextInput(attrs={'class': 'form-control part_input', 'placeholder': 'Produkt-Typ'}),
             'desc': forms.TextInput(attrs={'class': 'form-control part_input', 'placeholder': 'Produktbeschreibung'}),
-            'date': forms.TextInput(attrs={'class': 'form-control part_input', 'placeholder': 'Datum'}),
+            'date': forms.TextInput(attrs={'class': 'form-control part_input date_input', 'placeholder': 'Datum'}),
             'nprice': forms.TextInput(attrs={'class': 'form-control part_input', 'placeholder': 'Netto-Preis'}),
         }
 
@@ -113,3 +114,6 @@ class BillForm(forms.ModelForm):
             'taxes': 'Steuersatz',
             'number': 'Rechnungsnummer'
         }
+
+class CronForm(forms.Form):
+    customers = forms.ModelChoiceField(queryset=Customer.objects.all().order_by('surname'))

@@ -33,3 +33,7 @@ header {
 #nav-tabContent {
 	min-height: 200px;
 }
+
+#div_buttons {
+	margin-left:15px;
+}

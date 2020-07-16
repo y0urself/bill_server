@@ -37,7 +37,7 @@ function checkAppend() {
     });
     if (!empty) {
         $('#id_p-TOTAL_FORMS').val(i)
-        var html = $(".form_row:first").get(0).outerHTML.replaceAll('p-0-', 'p-' + i + '-').replace(/value="(.*)" c/g, 'value="" c')
+        var html = $(".form_row:first").get(0).outerHTML.replaceAll('p-0-', 'p-' + i + '-').replace(/value="(.*)" c/g, 'value="" c').replace(/value="[0-9]+" id/g, 'value="" id')
         console.log(html)
         $(".form_row:last").after(html);
     }
@@ -53,12 +53,12 @@ $(document).ready(function() {
         //TODO Only if one is left :D
         checkAppend()
         
-        html = $(this).closest('.form_row').get(0).outerHTML.replace(/value="(.*)" c/g, 'value="" c')
+        html = $(this).closest('.form_row').get(0).outerHTML.replace(/value="(.*)" c/g, 'value="" c').replace(/value="[0-9]+" id/g, 'value="" id')
         $(this).closest('.form_row').get(0).outerHTML = html
     });
 
-    $('#id_date').datepicker({
-        format: "dd.mm.yyyy",
+    $('#id_b-date').datepicker({
+        format: "yyyy-mm-dd",
         weekStart: 1,
         showOtherMonths: true,
         selectOtherMonths: true,
@@ -70,6 +70,21 @@ $(document).ready(function() {
         gotoCurrent: true,
         orientation: "bottom"
     });
+
+    $('.date_input').datepicker({
+        format: "yyyy-mm-dd",
+        weekStart: 1,
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        daysOfWeekHighlighted: "6,0",
+        autoclose: true,
+        todayHighlight: true,
+        changeMonth: true,
+        changeYear: true,
+        gotoCurrent: true,
+        orientation: "bottom"
+    });
+
 
     $('#id_date').datepicker("setDate", new Date());
 });
