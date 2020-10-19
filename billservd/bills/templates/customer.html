@@ -51,6 +51,11 @@
 
         <div class="row">
             <div class="col-sm-4">
+                <a role="button" class="btn float-right btn-success btn-block" href="{% url 'new_bill_from_customer' customer.id%}">
+                    Neue Rechnung
+                </a>
+            </div>
+            <div class="col-sm-4">
                 <a role="button" class="btn float-right btn-warning btn-block" href="{% url 'edit_customer' customer.id%}">
                     Bearbeiten
                 </a>

@@ -44,46 +44,99 @@
         <h3>
             Rechnungsinformationen
         </h3>
-        <table class="table table-hover">
-            <tr>
-                <td class="">Steuersatz:</td>
-                <td>{{bill.taxes}}</td>
-            </tr>
-            <tr>
-                <td class="">Rechnungsnummer:</td>
-                <td>{{bill.number}}</td>
-            </tr>
-            <tr>
-                <td class="">Rechnungsdatum:</td>
-                <td>{{bill.date}}</td>
-            </tr>
-        </table>
+        <div class="row table-hover">
+            <div class="col-sm-3">
+                Rechnungsnummer:
+            </div>
+            <div class="col-sm-3">
+                {{bill.number}}
+            </div>
+        </div>
+        <div class="row table-hover">
+            <div class="col-sm-3">
+                Rechnungsdatum:
+            </div>
+            <div class="col-sm-3">
+                {{bill.date}}
+            </div>
+        </div>
+        <div class="row table-hover">
+            <div class="col-sm-3">
+                Steuersatz:
+            </div>
+            <div class="col-sm-3">
+                {{bill.taxes}}
+            </div>
+        </div>
+        <div class="row table-hover">
+            <div class="col-sm-3">
+                Brutto-Summe:
+            </div>
+            <div class="col-sm-3">
+                {{bill.part_sum}}
+            </div>
+            <div class="col-sm-3">
+                offen:
+            </div>
+            <div class="col-sm-3">
+                {{bill.open_sum}}
+            </div>
+        </div>
+        <div class="row table-hover">
+            <div class="col-sm-3">
+                Rechnungsstatus:
+            </div>
+            <div class="col-sm-3">
+                {{bill.status}}
+            </div>
+        </div>
+        <div class="row table-hover">
+            <div class="col-sm-3">
+                Abschlagsrechnung:
+            </div>
+            <div class="col-sm-5">
+                <form class="form" method="post" action="{% url 'create_part_bill' bill.id %}">
+                {% csrf_token %}
+                    {{ payform.part_opts }}
+                    <input type=submit  id="form_part_bill_create" class="btn div_buttons btn-primary btn-block" action="{% url 'create_part_bill' bill.id %}" value="Abschlag erstellen"/>
+                </form>
+            </div>
+            <div class="col-sm-2">
+                <a role="button" id="form_download" class="btn btn-primary btn-block" href="{% url 'dl_part_bill' bill.id %}">
+                    Download Abschlag PDF 
+                </a>
+            </div>
+        </div>
         <h3>
             Rechnungsposten
         </h3>
         <table class="table table-hover">
             <tr>
                 <td class="">Hersteller</td>
+                <td>Datum</td>
                 <td>Produktname</td>
                 <td>Produktbeschreibung</td>
                 <td>Produkt-Typ</td>
-                <td>Datum</td>
-                <td>Netto-Preis in €</td>
+                <td>Netto-Einzelpreis in €</td>
+                <td>Menge</td>
+                <td>Netto-Gesamtpreis in €</td>
             </tr>
             {% for part in bill.parts.all %}
             <tr>
                 <td class="">{{ part.vendor }}</td>
+                <td>{{ part.date }}</td>
                 <td>{{ part.product_name }}</td>
                 <td>{{ part.desc }}</td>
                 <td>{{ part.product_type }}</td>
-                <td>{{ part.date }}</td>
                 <td>{{ part.nprice }}</td>
+                <td>{{ part.amount }}</td>
+                <td>{{ part.nsum }}</td>
             </tr>
             {% endfor %}
         </table>
         <div class="row">
             <div class="col-sm-4">
-                <a role="button" id="form_delete" class="btn float-right btn-primary btn-block" href="{% url 'dl_bill' bill.id %}">
+                <a role="button" id="form_download" class="btn float-right btn-primary btn-block" href="{% url 'dl_bill' bill.id %}">
                     Download PDF 
                 </a>
             </div>

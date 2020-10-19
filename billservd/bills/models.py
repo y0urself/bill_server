@@ -1,9 +1,14 @@
-from django.db.models import Model, CharField, FloatField, ForeignKey, ManyToManyField, CASCADE, DateField
-import django.forms as forms
 import datetime
-
+import django.forms as forms
 from django.utils import timezone
-# Create your models here.
+from django.contrib.auth.forms import AuthenticationForm
+from django.forms.widgets import PasswordInput, TextInput
+from django.db.models import Model, CharField, IntegerField, FloatField, ForeignKey, ManyToManyField, CASCADE, DateField
+
+
+class AuthForm(AuthenticationForm):
+    username = forms.CharField(widget=TextInput(attrs={'class':'validate','placeholder': 'Benutzername'}))
+    password = forms.CharField(widget=PasswordInput(attrs={'placeholder':'Passwort'}))
 
 
 class Part(Model):
@@ -12,16 +17,30 @@ class Part(Model):
     product_type = CharField(max_length=100, blank=True)
     desc = CharField(max_length=100, blank=True)
     date = DateField(blank=True, null=True)
-    nprice = FloatField()
+    amount = IntegerField(default=1)
+    nprice = FloatField(default=0)
+    nsum = FloatField(blank=True, default=0)
 
     def __str__(self):
         return f'{self.vendor}, {self.product_name}, {self.desc}'
 
+    def calc_nsum(self):
+        return self.nprice * self.amount
+
+
 GENDERS = [
-    ('männlich', 'male'),
-    ('weiblich', 'female'),
-    ('keins', 'none')
+    ('male', 'männlich'),
+    ('female', 'weiblich'),
+    ('none', 'keins')
 ]
+
+STATUSES = [
+    ('open', 'Offen'),
+    ('delivered', 'Verschickt'),
+    ('partly paid', 'Teilweise bezahlt'),
+    ('paid', 'Bezahlt')
+]
+
 
 class Customer(Model):
     class Meta:
@@ -31,7 +50,7 @@ class Customer(Model):
     company = CharField(max_length=70, blank=True)
     street = CharField(max_length=80)
     city = CharField(max_length=80)
-    gender = CharField(max_length=10, choices=GENDERS, default='keins')
+    gender = CharField(max_length=10, choices=GENDERS, default='none')
 
     def __str__(self):
         cx = f'{self.name} {self.surname}, {self.street} {self.city}'
@@ -45,10 +64,22 @@ class Bill(Model):
     number = CharField(max_length=6, unique=True)
     parts = ManyToManyField(Part)
     customer = ForeignKey(Customer, on_delete=CASCADE, null=True)
+    status = CharField(max_length=35, choices=STATUSES, default='open')
+    part_sum = FloatField(default=0.0)
+    open_sum = FloatField(default=0.0)
+    paid_sum = FloatField(default=0.0)
 
     def bill_date(self):
         return f'Rechnungsdatum: {self.date}'
 
+    def update_sum(self):
+        sum_ = 0
+        if self.parts:
+            for part in self.parts.all():
+                #print(part.nprice)
+                sum_ += part.nprice
+            sum_ = sum_ + sum_ * self.taxes
+        return sum_
 
 class PartForm(forms.ModelForm):
     class Meta:
@@ -60,6 +91,7 @@ class PartForm(forms.ModelForm):
             'desc', 
             'date', 
             'nprice', 
+            'amount',
             'id'
         ]
         labels = {
@@ -68,6 +100,7 @@ class PartForm(forms.ModelForm):
             'product_type': 'Produkt-Typ',
             'desc': 'Produktbeschreibung',
             'date': 'Dienstleistungsdatum',
+            'amount': 'Menge',
             'nprice': 'Netto-Preis'
         }
         widgets = {
@@ -76,6 +109,7 @@ class PartForm(forms.ModelForm):
             'product_type': forms.TextInput(attrs={'class': 'form-control part_input', 'placeholder': 'Produkt-Typ'}),
             'desc': forms.TextInput(attrs={'class': 'form-control part_input', 'placeholder': 'Produktbeschreibung'}),
             'date': forms.TextInput(attrs={'class': 'form-control part_input date_input', 'placeholder': 'Datum'}),
+            'amount': forms.TextInput(attrs={'class': 'form-control part_input ', 'placeholder': 'Menge'}),
             'nprice': forms.TextInput(attrs={'class': 'form-control part_input', 'placeholder': 'Netto-Preis'}),
         }
 
@@ -116,4 +150,16 @@ class BillForm(forms.ModelForm):
         }
 
 class CronForm(forms.Form):
-    customers = forms.ModelChoiceField(queryset=Customer.objects.all().order_by('surname'))
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all())
+
+
+PART_PAYMENTS = [
+    (0.25, '1/4'),
+    (0.33333, '1/3'),
+    (0.5, '1/2'),
+    (0.66666, '2/3'),
+    (0.75, '3/4'),
+]
+
+class PartPaymentForm(forms.Form):
+    part_opts = forms.CharField(widget=forms.Select(choices=PART_PAYMENTS))

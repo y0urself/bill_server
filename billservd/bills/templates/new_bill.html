@@ -30,27 +30,28 @@
 <div id="content" class="container-fluid">
     <div class="jumbotron">
         <hr class="my-3"> 
-        <form class="form" method="POST" action="">
+        <form class="form" method="POST" action=".">
             {% csrf_token %}
+            <!-- {{ pform.management_form }} -->
             <div class="row">
                 <div class="col-sm-3">
                     <h3>
                         Kundeninformationen 
                     </h3>
                 </div>
-                <div class="col-sm-5">
-                    {{ some_form.customers }}
+                <!-- <div class="col-sm-5">
+                    {{ some_form.customer }}
                 </div>
                 <div class="col-sm-2">
-                    <button type=submit class="btn btn-primary" id="form_choose" >
+                    <button type=submit class="btn btn-primary" id="form_choose" name="choose" >
                         Auswählen
                     </button>
-                </div>
+                </div> -->
             </div>
-
         </form>
-        <form class="form" method="POST" action="">
-            {% csrf_token %}
+            <form class="form" method="POST" action=".">
+                {% csrf_token %}
+                {{ cform.management_form }}
             {% for field in cform %}
                 {% if not field.is_hidden %}
                 <div class="row">
@@ -90,45 +91,53 @@
                     {{field}}
                 {% endif %}
             {% endfor %}
-            {{ bform.errors }}
-            {{ bform.non_field_errors }}
+
             <h3>
                 Rechnungsposten
             </h3>
-            <table class="table table-xtra-condensed parts_table table-striped" id="parts_table">
-                <tbody>
-                    {{ pform.management_form }}
-                    {% for part in pform %}
-                    <tr class="form_row d-flex parts_row" style="margin-left: 0px;">
-                        {% for field in part %}
-                            {% if not field.is_hidden %}
-                                {% if field.name != "date" and field.name != "nprice" %}
-                                    <td class="col-sm-2">
-                                        {{ field }}
-                                    </td>
+            <div class="table-responsive">
+                <td class="col-sm-2">Hersteller</td>
+                <td class="col-sm-2">Bezeichnung</td>
+                <td class="col-sm-2">Typ</td>
+                <td class="col-sm-2">Beschreibung</td>
+                <td class="col-sm-1">Datum</td>
+                <td class="col-sm-1">Netto</td>
+                <td class="col-sm-1">Menge</td>
+                <table class="table table-xtra-condensed parts_table table-striped" id="parts_table">
+                    <tbody>
+                        {{ pform.management_form }}
+                        {% for part in pform %}
+                        <tr class="form_row d-flex parts_row" style="margin-left: 0px;">
+                            {% for field in part %}
+                                {% if not field.is_hidden %}
+                                    {% if field.name != "date" and field.name != "nprice"  and field.name != "amount" %}
+                                        <td class="col-sm-2">
+                                            {{ field }}
+                                        </td>
+                                    {% else %}
+                                        <td class="col-sm-1">
+                                            {{ field }}
+                                        </td>
+                                    {% endif %}
                                 {% else %}
-                                    <td class="col-sm-1">
-                                        {{ field }}
-                                    </td>
+                                    {{field}}
                                 {% endif %}
-                            {% else %}
-                                {{field}}
-                            {% endif %}
+                            {% endfor %}
+                            <td class="col-sm-1">
+                                <div class="input-group-append part_input">
+                                    <button class="btn btn-dark form_duplicate" type="button">
+                                        <span class="oi" data-glyph="plus" title="plus" aria-hidden="true"></span>
+                                    </button>
+                                    <button class="btn btn-dark form_delete" type="button">
+                                        <span class="oi" data-glyph="delete" title="delete" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                         {% endfor %}
-                        <td class="col-sm-2">
-                            <div class="input-group-append">
-                                <button class="btn btn-dark form_duplicate" type="button">
-                                    <span class="oi" data-glyph="plus" title="plus" aria-hidden="true"></span>
-                                </button>
-                                <button class="btn btn-dark form_delete" type="button">
-                                    <span class="oi" data-glyph="delete" title="delete" aria-hidden="true"></span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
             <button type=submit class="btn btn-primary" id="form_add" >
                 Speichern
             </button>
